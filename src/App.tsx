@@ -54,15 +54,7 @@ export default function App() {
   const [pitchError, setPitchError] = useState<string | null>(null);
   const [proposalStatus, setProposalStatus] = useState<{ status: string; review: string } | null>(null);
   const [showLowBudgetWarning, setShowLowBudgetWarning] = useState(false);
-  const [showApiKeyWarning, setShowApiKeyWarning] = useState(false);
   const initialLoadRef = useRef(false);
-
-  // API Key Check
-  useEffect(() => {
-    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'MISSING_API_KEY' || process.env.GEMINI_API_KEY === 'MY_GEMINI_API_KEY') {
-      setShowApiKeyWarning(true);
-    }
-  }, []);
 
   // Low Budget Warning
   useEffect(() => {
@@ -414,27 +406,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white text-foreground selection:bg-foreground selection:text-white font-sans">
-      {/* API Key Warning */}
-      <AnimatePresence>
-        {showApiKeyWarning && (
-          <motion.div 
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            className="fixed top-24 left-1/2 -translate-x-1/2 z-[60] bg-amber-600 text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 max-w-lg"
-          >
-            <AlertTriangle className="w-6 h-6 shrink-0" />
-            <div>
-              <div className="font-bold">Gemini API Key Missing</div>
-              <div className="text-xs opacity-80">AI features will not work. Please add your GEMINI_API_KEY to the .env file and restart the server.</div>
-            </div>
-            <button onClick={() => setShowApiKeyWarning(false)} className="ml-4 p-2 hover:bg-white/10 rounded-full">
-              <LogOut className="w-4 h-4 rotate-90" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Low Budget Warning */}
       <AnimatePresence>
         {showLowBudgetWarning && (
