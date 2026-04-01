@@ -80,7 +80,11 @@ export function MapView({ gameState, onSelectStage, onBack }: {
                   filter: hoveredStage !== null && !isHovered ? 'blur(4px)' : 'blur(0px)',
                   y: 0 
                 }}
-                transition={{ delay: index * 0.1, type: "spring" }}
+                transition={{ 
+                  delay: index * 0.1, 
+                  type: "spring",
+                  filter: { type: "tween", duration: 0.3 } 
+                }}
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 {/* Vertical Connector */}
