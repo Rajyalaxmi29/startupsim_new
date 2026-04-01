@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User progress and game state information.",
+      "type": "object",
+      "properties": {
+        "gameState": {
+          "type": "object",
+          "description": "The current state of the simulation game."
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "stageName": { "type": "string" },
+              "score": { "type": "number" },
+              "feedback": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server-side timestamp of the last update."
+        }
+      },
+      "required": ["gameState"]
+    },
+    "Proposal": {
+      "title": "Proposal",
+      "description": "Final investor proposal status.",
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["accepted", "rejected"]
+        },
+        "review": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["status", "review", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Stores user-specific game progress."
+    },
+    "/proposals/{userId}": {
+      "schema": "Proposal",
+      "description": "Stores the final result of the startup pitch."
+    }
+  }
+}

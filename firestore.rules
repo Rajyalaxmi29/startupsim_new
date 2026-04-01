@@ -1,0 +1,70 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId} (Firebase Auth UID)
+    // Fields:
+    //   - gameState: map (required) - Full game state object
+    //   - history: list (optional) - Array of stage results
+    //   - lastUpdated: timestamp (optional) - Server timestamp
+    //
+    // Collection: proposals
+    // Document ID: {userId} (Firebase Auth UID)
+    // Fields:
+    //   - status: string (required) - 'accepted' or 'rejected'
+    //   - review: string (required) - Investor feedback
+    //   - timestamp: timestamp (required) - Server timestamp
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['gameState']) &&
+             data.gameState is map &&
+             (!('history' in data) || data.history is list) &&
+             (!('lastUpdated' in data) || data.lastUpdated is timestamp);
+    }
+
+    function isValidProposal(data) {
+      return data.keys().hasAll(['status', 'review', 'timestamp']) &&
+             data.status in ['accepted', 'rejected'] &&
+             data.review is string &&
+             data.review.size() < 5000 &&
+             data.timestamp is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+      allow delete: if false; // Progress should not be deleted by users directly
+    }
+
+    match /proposals/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidProposal(request.resource.data);
+      allow update: if isOwner(userId) && isValidProposal(request.resource.data);
+      allow delete: if false;
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "StartupSim",
+  "description": "An immersive startup simulation journey powered by AI.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
